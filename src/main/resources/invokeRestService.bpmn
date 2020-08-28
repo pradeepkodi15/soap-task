@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="_B0ppIPFYEeOlke_H2tkzCA" targetNamespace="http://camunda.org/examples" exporter="Camunda Modeler" exporterVersion="3.7.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <bpmn2:process id="rest-test" name="Get Holiday" isExecutable="true">
+    <bpmn2:startEvent id="StartEvent_1" name="start with date">
+      <bpmn2:outgoing>SequenceFlow_1</bpmn2:outgoing>
+    </bpmn2:startEvent>
+    <bpmn2:serviceTask id="ServiceTask_1" name="Check if date is holiday">
+      <bpmn2:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="url">http://localhost:8080/greeting</camunda:inputParameter>
+            <camunda:inputParameter name="method">GET</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Accept">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+            <camunda:outputParameter name="isHoliday">
+              <camunda:script scriptFormat="Javascript">connector.getVariable("response");
+var obj = JSON.parse(response);
+print("obj ==== "+obj);
+print("obj ==== "+obj["age"]);
+print("response  == "+response);
+isHoliday =  obj["age"];</camunda:script>
+            </camunda:outputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_1</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_2</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_1" name="" sourceRef="StartEvent_1" targetRef="ServiceTask_1" />
+    <bpmn2:exclusiveGateway id="ExclusiveGateway_1">
+      <bpmn2:extensionElements>
+        <camunda:executionListener event="start">
+          <camunda:script scriptFormat="Javascript">print("IS HOLIDAY"+isHoliday);</camunda:script>
+        </camunda:executionListener>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>SequenceFlow_2</bpmn2:incoming>
+      <bpmn2:outgoing>SequenceFlow_3</bpmn2:outgoing>
+      <bpmn2:outgoing>SequenceFlow_4</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="SequenceFlow_2" name="" sourceRef="ServiceTask_1" targetRef="ExclusiveGateway_1" />
+    <bpmn2:sequenceFlow id="SequenceFlow_3" name="is holiday" sourceRef="ExclusiveGateway_1" targetRef="UserTask_1">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${isHoliday &gt; 1}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:userTask id="UserTask_1" name="Pack for holiday" camunda:assignee="demo">
+      <bpmn2:incoming>SequenceFlow_3</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_10djc8w</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:sequenceFlow id="SequenceFlow_4" name="is no holiday" sourceRef="ExclusiveGateway_1" targetRef="UserTask_2">
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression">${isHoliday &lt; 1}</bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="Flow_0k0elww" sourceRef="UserTask_2" targetRef="Gateway_06npanh" />
+    <bpmn2:sequenceFlow id="Flow_10djc8w" sourceRef="UserTask_1" targetRef="Gateway_06npanh" />
+    <bpmn2:userTask id="UserTask_2" name="Pack for work" camunda:assignee="demo">
+      <bpmn2:incoming>SequenceFlow_4</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_0k0elww</bpmn2:outgoing>
+    </bpmn2:userTask>
+    <bpmn2:exclusiveGateway id="Gateway_06npanh">
+      <bpmn2:incoming>Flow_0k0elww</bpmn2:incoming>
+      <bpmn2:incoming>Flow_10djc8w</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_1v4ftzc</bpmn2:outgoing>
+    </bpmn2:exclusiveGateway>
+    <bpmn2:sequenceFlow id="Flow_1v4ftzc" sourceRef="Gateway_06npanh" targetRef="Activity_0kncx5v" />
+    <bpmn2:endEvent id="Event_0e6gjwe">
+      <bpmn2:incoming>Flow_0yj18iq</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:sequenceFlow id="Flow_0yj18iq" sourceRef="Activity_0kncx5v" targetRef="Event_0e6gjwe" />
+    <bpmn2:serviceTask id="Activity_0kncx5v" name="Holidayyyy">
+      <bpmn2:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="url">http://localhost:8080/greeting</camunda:inputParameter>
+            <camunda:inputParameter name="method">GET</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Accept">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector1</camunda:connectorId>
+        </camunda:connector>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>Flow_1v4ftzc</bpmn2:incoming>
+      <bpmn2:outgoing>Flow_0yj18iq</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="rest-test">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_4" bpmnElement="StartEvent_1">
+        <dc:Bounds x="170" y="203" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="154" y="244" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_17" bpmnElement="ServiceTask_1">
+        <dc:Bounds x="256" y="181" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_StartEvent_4" targetElement="_BPMNShape_ServiceTask_17">
+        <di:waypoint x="206" y="221" />
+        <di:waypoint x="256" y="221" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ExclusiveGateway_7" bpmnElement="ExclusiveGateway_1" isMarkerVisible="true">
+        <dc:Bounds x="406" y="196" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_17" targetElement="_BPMNShape_ExclusiveGateway_7">
+        <di:waypoint x="356" y="221" />
+        <di:waypoint x="406" y="221" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_UserTask_6" bpmnElement="UserTask_1">
+        <dc:Bounds x="506" y="82" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ExclusiveGateway_7" targetElement="_BPMNShape_UserTask_6">
+        <di:waypoint x="431" y="196" />
+        <di:waypoint x="431" y="122" />
+        <di:waypoint x="506" y="122" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="408" y="171" width="47" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ExclusiveGateway_7" targetElement="Activity_1fykb9c_di">
+        <di:waypoint x="431" y="246" />
+        <di:waypoint x="431" y="326" />
+        <di:waypoint x="506" y="326" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="416" y="334" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k0elww_di" bpmnElement="Flow_0k0elww">
+        <di:waypoint x="606" y="326" />
+        <di:waypoint x="770" y="326" />
+        <di:waypoint x="770" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10djc8w_di" bpmnElement="Flow_10djc8w">
+        <di:waypoint x="606" y="122" />
+        <di:waypoint x="770" y="122" />
+        <di:waypoint x="770" y="175" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1fykb9c_di" bpmnElement="UserTask_2">
+        <dc:Bounds x="506" y="286" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1js6l69_di" bpmnElement="Gateway_06npanh" isMarkerVisible="true">
+        <dc:Bounds x="745" y="175" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1v4ftzc_di" bpmnElement="Flow_1v4ftzc">
+        <di:waypoint x="795" y="200" />
+        <di:waypoint x="880" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0e6gjwe_di" bpmnElement="Event_0e6gjwe">
+        <dc:Bounds x="1072" y="182" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0yj18iq_di" bpmnElement="Flow_0yj18iq">
+        <di:waypoint x="980" y="200" />
+        <di:waypoint x="1072" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1k3dow3_di" bpmnElement="Activity_0kncx5v">
+        <dc:Bounds x="880" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn2:definitions>
